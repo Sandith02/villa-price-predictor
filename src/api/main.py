@@ -23,8 +23,8 @@ app.add_middleware(
 )
 
 # Load the trained model
-MODEL_PATH = "../../data/models/villa_price_model.pkl"
-INFO_PATH = "../../data/models/model_info.json"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/villa_price_model.pkl")
+INFO_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/model_info.json")
 
 try:
     model = joblib.load(MODEL_PATH)
@@ -114,4 +114,5 @@ async def predict_villa_price(villa: VillaRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
