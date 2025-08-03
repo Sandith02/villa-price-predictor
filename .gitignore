@@ -25,6 +25,8 @@ Thumbs.db
 .vscode/settings.json
 .idea/
 
-# Data
-data/raw/*.csv
-!data/raw/ahangama_villas.csv
+# Data (exclude large datasets, keep essential ones)
+data/raw/*_large.csv
+data/processed/*.csv
+*.parquet
+*.h5
