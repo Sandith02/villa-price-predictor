@@ -23,7 +23,8 @@ app.add_middleware(
 )
 
 # Load the trained model
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/villa_price_model.pkl")
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))  # this becomes project-root
+MODEL_PATH = os.path.join(BASE_DIR, 'data', 'models', 'villa_price_model.pkl')
 INFO_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/model_info.json")
 
 try:
