@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import joblib
 import json
 import os
+import numpy as np
 from typing import Optional
 
 # Initialize FastAPI app
@@ -16,56 +17,91 @@ app = FastAPI(
 # Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Load the trained model
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/villa_price_model.pkl")
-INFO_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/model_info.json")
+# Simple prediction function (fallback if model fails to load)
+def simple_predict(bedrooms, bathrooms, beach_distance, pool, ocean_view, garden_size, ac_rooms, wifi_quality):
+    """Simple rule-based prediction if ML model fails"""
+    base_price = 50
+    
+    # Add for bedrooms
+    base_price += bedrooms * 25
+    
+    # Add for bathrooms  
+    base_price += bathrooms * 15
+    
+    # Beach distance penalty
+    if beach_distance <= 50:
+        base_price += 100  # Beachfront premium
+    elif beach_distance <= 200:
+        base_price += 50   # Close to beach
+    elif beach_distance >= 1000:
+        base_price -= 30   # Far from beach
+    
+    # Amenities
+    if pool == 1:
+        base_price += 40
+    if ocean_view == 1:
+        base_price += 60
+    if garden_size == 3:  # Large
+        base_price += 20
+    elif garden_size == 2:  # Medium
+        base_price += 10
+    
+    base_price += ac_rooms * 10
+    base_price += wifi_quality * 10
+    
+    return max(base_price, 20)
+
+# Try to load the trained model
+model = None
+model_info = None
 
 try:
+    MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/villa_price_model.pkl")
+    INFO_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/model_info.json")
+    
     model = joblib.load(MODEL_PATH)
     with open(INFO_PATH, 'r') as f:
         model_info = json.load(f)
     print("✅ AI model loaded successfully!")
 except Exception as e:
-    print(f"❌ Error loading model: {e}")
-    model = None
-    model_info = None
+    print(f"⚠️ Could not load ML model: {e}")
+    print("📊 Using simple rule-based prediction")
+    model_info = {"features": ["bedrooms", "bathrooms", "beach_distance", "pool", "ocean_view", "garden_size", "ac_rooms", "wifi_quality"]}
 
 # Request model for villa prediction
 class VillaRequest(BaseModel):
     bedrooms: int
     bathrooms: int
     beach_distance_m: int
-    pool: str  # "Yes" or "No"
-    ocean_view: str  # "Yes" or "No"
-    garden_size: str  # "Small", "Medium", "Large"
+    pool: str
+    ocean_view: str
+    garden_size: str
     ac_rooms: int
-    wifi_quality: str  # "Average", "Good", "Excellent"
+    wifi_quality: str
 
 @app.get("/")
 async def root():
     return {
         "message": "🏖️ Villa Price Predictor API",
         "status": "active",
-        "model_loaded": model is not None
+        "model_loaded": model is not None,
+        "prediction_method": "ML Model" if model else "Rule-based"
     }
 
 @app.get("/model-info")
 async def get_model_info():
     if model_info is None:
-        raise HTTPException(status_code=500, detail="Model not loaded")
+        raise HTTPException(status_code=500, detail="Model info not available")
     return model_info
 
 @app.post("/predict")
 async def predict_villa_price(villa: VillaRequest):
-    if model is None:
-        raise HTTPException(status_code=500, detail="Model not loaded")
-    
     try:
         # Convert categorical inputs to numbers
         pool_num = 1 if villa.pool.lower() == 'yes' else 0
@@ -77,26 +113,39 @@ async def predict_villa_price(villa: VillaRequest):
         garden_num = garden_map.get(villa.garden_size.lower(), 2)
         wifi_num = wifi_map.get(villa.wifi_quality.lower(), 2)
         
-        # Create feature array
-        features = [[
-            villa.bedrooms,
-            villa.bathrooms,
-            villa.beach_distance_m,
-            pool_num,
-            ocean_view_num,
-            garden_num,
-            villa.ac_rooms,
-            wifi_num
-        ]]
+        # Try ML model first, fallback to simple prediction
+        if model is not None:
+            try:
+                features = np.array([[
+                    villa.bedrooms,
+                    villa.bathrooms,
+                    villa.beach_distance_m,
+                    pool_num,
+                    ocean_view_num,
+                    garden_num,
+                    villa.ac_rooms,
+                    wifi_num
+                ]])
+                predicted_price = model.predict(features)[0]
+            except Exception as e:
+                print(f"ML prediction failed: {e}, using simple prediction")
+                predicted_price = simple_predict(
+                    villa.bedrooms, villa.bathrooms, villa.beach_distance_m,
+                    pool_num, ocean_view_num, garden_num, villa.ac_rooms, wifi_num
+                )
+        else:
+            predicted_price = simple_predict(
+                villa.bedrooms, villa.bathrooms, villa.beach_distance_m,
+                pool_num, ocean_view_num, garden_num, villa.ac_rooms, wifi_num
+            )
         
-        # Make prediction
-        predicted_price = model.predict(features)[0]
         predicted_price = max(predicted_price, 20)  # Minimum $20/night
         
         return {
             "predicted_price": round(predicted_price, 2),
             "currency": "USD",
             "period": "per night",
+            "prediction_method": "ML Model" if model else "Rule-based",
             "villa_features": {
                 "bedrooms": villa.bedrooms,
                 "bathrooms": villa.bathrooms,
