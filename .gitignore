@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+villa-ai-env/
+.env
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Models
+*.pkl
+*.joblib
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/settings.json
+.idea/
+
+# Data
+data/raw/*.csv
+!data/raw/ahangama_villas.csv
