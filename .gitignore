@@ -14,8 +14,8 @@ villa-ai-env/
 .ipynb_checkpoints/
 
 # Models
-*.pkl
-*.joblib
+# *.pkl
+# *.joblib
 
 # OS
 .DS_Store
