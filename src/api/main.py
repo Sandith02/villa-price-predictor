@@ -21,15 +21,39 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# Debug: Print current working directory and file structure
+print("🔍 DEBUG INFO:")
+print(f"Current working directory: {os.getcwd()}")
+print(f"Files in current directory: {os.listdir('.')}")
 
+# Check if main project directories exist
+if os.path.exists("/opt/render/project"):
+    print("✅ /opt/render/project exists")
+    print(f"Contents: {os.listdir('/opt/render/project')}")
+    
+    if os.path.exists("/opt/render/project/data"):
+        print("✅ /opt/render/project/data exists")
+        print(f"Contents: {os.listdir('/opt/render/project/data')}")
+        
+        if os.path.exists("/opt/render/project/data/models"):
+            print("✅ /opt/render/project/data/models exists")
+            print(f"Contents: {os.listdir('/opt/render/project/data/models')}")
+        else:
+            print("❌ /opt/render/project/data/models does NOT exist")
+    else:
+        print("❌ /opt/render/project/data does NOT exist")
+else:
+    print("❌ /opt/render/project does NOT exist")
+
+# Your existing model loading code...
 if os.path.exists("/opt/render/project/src"):
-    # Production path
     MODEL_PATH = "/opt/render/project/data/models/villa_price_model.pkl"
     INFO_PATH = "/opt/render/project/data/models/model_info.json"
 else:
-    # Local development path
     MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/villa_price_model.pkl")
     INFO_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/model_info.json")
+
+print(f"🎯 Trying to load model from: {MODEL_PATH}")
 
 try:
     model = joblib.load(MODEL_PATH)
