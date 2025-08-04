@@ -51,7 +51,7 @@ const SplashScreen = ({ onComplete }) => {
       {/* Footer */}
       <div className="absolute bottom-8 text-center">
         <p className="text-xs text-gray-400">
-            © 2025 VWizzzard. All rights reserved. Developed by GLAMOUR Tech.
+            © 2025 VWizzzard. Developed by GLAMOUR Tech.
         </p>
       </div>
     </div>
