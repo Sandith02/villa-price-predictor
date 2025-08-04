@@ -24,8 +24,8 @@ app.add_middleware(
 
 if os.path.exists("/opt/render/project/src"):
     # Production path
-    MODEL_PATH = "/opt/render/project/src/data/models/villa_price_model.pkl"
-    INFO_PATH = "/opt/render/project/src/data/models/model_info.json"
+    MODEL_PATH = "/opt/render/project/data/models/villa_price_model.pkl"
+    INFO_PATH = "/opt/render/project/data/models/model_info.json"
 else:
     # Local development path
     MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../data/models/villa_price_model.pkl")
