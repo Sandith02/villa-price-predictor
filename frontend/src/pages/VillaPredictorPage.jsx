@@ -74,7 +74,7 @@ const VillaPredictorPage = () => {
           {/* Left Side: Text + Form */}
           <div className="flex flex-col justify-center">
             <header className="mb-10">
-              <h1 className="text-4xl md:text-5xl font-light tracking-tight text-black mb-4">
+              <h1 className="text-4xl md:text-5xl font-regular tracking-tight text-black mb-4">
                 Villa Price Predictor
               </h1>
               <p className="text-lg text-gray-600">
