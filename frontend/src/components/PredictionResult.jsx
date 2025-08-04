@@ -3,7 +3,7 @@ const PredictionResult = ({ prediction }) => {
 
   return (
     <div className="mt-8 p-6 bg-gradient-to-r from-[#191919] to-[#191919] rounded-xl text-white">
-      <h3 className="text-2xl font-bold mb-2">🟡Predicted Price</h3>
+      <h3 className="text-2xl font-bold mb-2">🪙 Predicted Price</h3>
       <p className="text-3xl font-bold">${prediction.predicted_price}/night</p>
       <p className="text-sm opacity-90 mt-2">
         Based on {prediction.villa_features.bedrooms} bedrooms, {prediction.villa_features.beach_distance_m}m from beach

@@ -178,7 +178,7 @@ const VillaForm = ({ onSubmit, loading }) => {
         Predicting...
       </>
     ) : (
-      'Predict Villa Price'
+      'Abracadabra! Price Please...'
     )}
   </button>
 </div>
