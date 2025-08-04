@@ -24,8 +24,9 @@ app.add_middleware(
 
 if os.path.exists("/opt/render/project/src"):
     # Production paths - model files in src/data/models
-    MODEL_PATH = "/opt/render/project/src/data/models/villa_price_model.pkl"
-    INFO_PATH = "/opt/render/project/src/data/models/model_info.json"
+    BASE_DIR = os.path.dirname(__file__)  # this gives you /project-root/src/api
+    MODEL_PATH = os.path.abspath(os.path.join(BASE_DIR, '../data/models/villa_price_model.pkl'))
+    INFO_PATH = os.path.abspath(os.path.join(BASE_DIR, '../data/models/model_info.json'))
 else:
     # Local development path - go up one level to src, then data/models
     MODEL_PATH = os.path.join(os.path.dirname(__file__), "../data/models/villa_price_model.pkl")

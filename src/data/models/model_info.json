@@ -1,1 +1,1 @@
-{"features": ["Bedrooms", "Bathrooms", "Beach_Distance_M", "Pool", "Ocean_View", "Garden_Size", "AC_Rooms", "WiFi_Quality"], "accuracy": 0.4477559663788455, "error": 34.33641253252233, "total_villas": 55}
+{"features": ["Bedrooms", "Bathrooms", "Beach_Distance_M", "Pool", "Ocean_View", "Garden_Size", "AC_Rooms", "WiFi_Quality"], "accuracy": 0.06227717108351305, "error": 59.39839404398928, "total_villas": 56}
